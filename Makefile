@@ -15,22 +15,29 @@ jenkins-start:
 	sudo systemctl enable jenkins
 	sudo systemctl status jenkins
 
-setup:
+env-setup:
 	python3 -m venv ~/.microservice-app
 
 env:
 	which python3
 	python3 --version
 
-install:
+env-install:
 	sudo apt install -y pip
 	pip install --upgrade pip &&\
 	pip install --trusted-host pypi.python.org -r requirements.txt
 
-run:
+env-run:
 	source ~/.microservice-app/bin/activate
 
-localenv: instal setup env
+localenv: env-instal env-setup env
 
 tidy:
 	sudo apt install -y tidy
+
+docker:
+	sudo apt-get update
+	sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+	sudo apt-get install docker-ce docker-ce-cli containerd.io
+	sudo chmod 666 /var/run/docker.sock
