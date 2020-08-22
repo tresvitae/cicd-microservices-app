@@ -4,9 +4,7 @@ pipeline {
         stage('Build') { 
             steps { 
                 sh 'docker build -t webserver:dev nginx-app/.' 
-            }
-            agent {
-                docker { image 'webserver:dev' }
+                sh 'docker run -it --rm -d -p 8000:80 --name web webserver:dev'
             }
         }
         stage('Linting'){
@@ -23,6 +21,16 @@ pipeline {
             steps {
                 sh 'echo "publish"'
             }
+        }
+    }
+    post {
+        success {
+            echo 'Do something when it is successful'
+            bitbucketStatusNotify(buildState: 'SUCCESSFUL')
+        }
+        failure {
+            echo 'Do something when it is failed'
+            bitbucketStatusNotify(buildState: 'FAILED')
         }
     }
 }
