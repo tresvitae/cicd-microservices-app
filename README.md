@@ -33,3 +33,6 @@ Add Docker installations in Global Tool Configuration in Jenkins
 	Set Name (can be version of installed Docker in EC2, and Installation root: /usr/bin)
 9. Setup GitHub project with Blue Ocean
 10. Give Docker and Jenkins symbiotic permissions via command: sudo usermod -aG docker jenkins
+
+
+make tidy TO ACCEPT Linging stage
