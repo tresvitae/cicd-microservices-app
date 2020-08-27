@@ -1,6 +1,7 @@
 pipeline { 
     environment {
         registry = 'tresvitae/webserver-app'
+        registryCredential = 'aws-cred-ecr'
     }   
     agent any 
     stages {
@@ -22,19 +23,21 @@ pipeline {
                  aquaMicroscanner imageName: 'alpine:latest', notCompliesCmd: 'exit 3', onDisallowed: 'fail', outputFormat: 'html'
               }
          }
-        stage('Deploy on ECR') {
-            steps {
-                sh 'echo "publish"'
-            }
-        }
     }
     post {
         success {
-            echo 'Do something when it is successful'
+            script {
+                docker.withRegistry('https://998598315760.dkr.ecr.us-west-2.amazonaws.com/udacity-capstone:latest', 'ecr:us-west-2:' + registryCredential) {
+                dockerImage.push()
+                }
+            }
+            sh 'docker container stop web'
+            echo 'Docker container deployed on Amazon ECR repository'
         }
         failure {
             sh 'docker container stop web'
             sh 'docker container prune -f'
+            sh 'docker image prune --filter "until=24h" -f'
             echo 'BUILD FAILED'
         }
     }
