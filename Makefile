@@ -14,6 +14,7 @@ jenkins-start:
 	sudo systemctl start jenkins
 	sudo systemctl enable jenkins
 	sudo systemctl status jenkins
+	chkconfig jenkins on
 
 env-setup:
 	python3 -m venv ~/.microservice-app
@@ -41,3 +42,5 @@ docker:
 	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 	sudo apt-get install docker-ce docker-ce-cli containerd.io
 	sudo chmod 666 /var/run/docker.sock
+	sudo usermod -a -G docker jenkins
+	chkconfig docker on

@@ -1,7 +1,6 @@
 pipeline { 
     environment {
         registry = 'tresvitae/webserver-app'
-        registryCredential = 'aws-cred-ecr'
     }   
     agent any 
     stages {
@@ -10,7 +9,9 @@ pipeline {
                 script {
                     docker.build registry + ':$BUILD_NUMBER'
                 }
-                sh 'docker run -it --rm -d -p 8000:80 --name web webserver-app:dev'
+                sh 'docker image ls'
+                sh 'docker run -it --rm -d -p 8000:80 --name web ' + registry + ':$BUILD_NUMBER'
+                sh 'docker container ls'
             }
         }
         stage('Linting') {
@@ -19,19 +20,22 @@ pipeline {
             }
         }
         stage('Security Aqua MicroScanner') {
-              steps { 
-                 aquaMicroscanner imageName: 'alpine:latest', notCompliesCmd: 'exit 3', onDisallowed: 'fail', outputFormat: 'html'
-              }
-         }
+            steps { 
+                aquaMicroscanner imageName: 'alpine:latest', notCompliesCmd: 'exit 3', onDisallowed: 'fail', outputFormat: 'html'
+            }
+        }
+        stage('deployed on ECR') {
+            steps {
+                script {
+                    docker.withRegistry('https://998598315760.dkr.ecr.us-west-2.amazonaws.com/udacity-capstone:latest', 'ecr:us-west-2:aws-cred-ecr') {
+                    sh 'docker tag ' + registry + ':$BUILD_NUMBER 998598315760.dkr.ecr.us-west-2.amazonaws.com/udacity-capstone:latest'
+                }
+            }
+        }
+    }
     }
     post {
         success {
-            script {
-                docker.withRegistry('https://998598315760.dkr.ecr.us-west-2.amazonaws.com/udacity-capstone:latest', 'ecr:us-west-2:' + registryCredential) {
-                dockerImage.push()
-                }
-            }
-            sh 'docker container stop web'
             echo 'Docker container deployed on Amazon ECR repository'
         }
         failure {
