@@ -49,7 +49,13 @@ Configure AWS CLI and an authentication token
 2. Add permission ecr:GetAuthorizationToken API through an IAM policy n your working AWS account: AmazonEC2ContainerRegistryFullAccess
 3. Run aws ecr get-login-password --region working_region | docker login --username AWS --password-stdin aws_account_id.dkr.ecr.region.amazonaws.com
 (make red = aws_account_id, region)
-4. Now, you need to edit Jenkinsfile:
+
+Create AWS ECR repository:
+1. Can be created in AWS Console, or via CLI:
+aws ecr create-repository \
+    --repository-name your-repo-name-aws:latest
+
+Upgrade Jenkinsfile:
 (a) In stage 'Change a tag of docker image', edit line:
 sh 'docker image tag ' + registry + ':$BUILD_NUMBER your-repo-name-aws:latest'
 
