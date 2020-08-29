@@ -30,7 +30,7 @@ pipeline {
                 sh 'docker image ls'
             }
         }
-        stage('Deploy to AWS ECR') {
+        stage('Push to AWS ECR') {
             steps {
                 script {
                     docker.withRegistry('https://998598315760.dkr.ecr.us-west-2.amazonaws.com/udacity-capstone:latest', 'ecr:us-west-2:aws-cred-ecr') {
@@ -42,7 +42,7 @@ pipeline {
     }
     post {
         success {
-            echo 'Docker image deployed to Amazon ECR repository'
+            echo 'Docker image pushed, and deployed to Amazon ECR repository'
         }
         failure {
             sh 'docker container stop web'

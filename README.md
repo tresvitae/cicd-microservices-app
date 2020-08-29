@@ -1,6 +1,8 @@
 
 # Udacity Capstone Project 
 
+Project Overview
+
 Develop a CI/CD pipeline for micro services applications with rolling deployment strategy. 
 
 Project created on EC2 Instance with ami-0a634ae95e11c6f91 (us-west-2 region) - Linux Ubuntu 18.04 LTS.
@@ -67,10 +69,10 @@ docker.withRegistry('https://aws_account_id.dkr.ecr.region.amazonaws.com/your-re
 
 To built pipeline successfully, use 'make tidy' to pass the Linting stage.
 
-Web app is deployed on :8000
+Web app is deployed on [IP address]
 
 
 Second part of the Project is related to deploy these Docker container to a small Kubernetes cluster as rolling update deployment strategy, where Version B is gradually rolled out succeeding verion A. Suitable for smal bug fixes.
 
 Create AWS EKS Cluster and Node group
-1. 
+1. Can be created in AWS Console, or via CLI:
