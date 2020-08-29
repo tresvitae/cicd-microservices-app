@@ -29,17 +29,20 @@ Blue Ocean Pipeline Editor
 Display URL for Blue Ocean
 Blue Ocean Executor Info
 
-Pipeline: AWS Steps, Amazon ECR
+Pipeline: AWS Steps, Amazon ECR, CloudBees AWS Credentials Plugin
 
 Aqua MicroScanner, Aqua Security Scanner
 
-Docker, docker-build-step
+Docker, docker-build-step, CloudBees Docker Build and Publish plugin
 
 8. Configure AquaMicroScanner in Jenkins
 Add Docker installations in Global Tool Configuration in Jenkins
 	Set Name (can be version of installed Docker in EC2, and Installation root: /usr/bin)
 9. Setup GitHub project with Blue Ocean
 10. Give Docker and Jenkins symbiotic permissions via command: sudo usermod -aG docker jenkins
+11. Set up AWS credentials in Jenkins in “Manage Credentials” > icon "(global)" > "Add credentials"
+12. Generate Access key ID and Secret acces key generated in your user in AWS console (Keep the credentials for futher process of installing AWS CLI)
+13. Fill the credentials and set ID.
 
 Configure AWS CLI and an authentication token 
 1. In your EC2 instance, install and configure AWS CLI (https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
@@ -47,15 +50,21 @@ Configure AWS CLI and an authentication token
 3. Run aws ecr get-login-password --region working_region | docker login --username AWS --password-stdin aws_account_id.dkr.ecr.region.amazonaws.com
 (make red = aws_account_id, region)
 4. Now, you need to edit Jenkinsfile:
+(a) In stage 'Change a tag of docker image', edit line:
+sh 'docker image tag ' + registry + ':$BUILD_NUMBER your-repo-name-aws:latest'
 
-(a) Tag your image so you can push the image to your repository:
-docker tag tresvitae/webserver-app:$BUILD_NUMBER aws_account_id.dkr.ecr.region.amazonaws.com/your-repo-name-aws:latest
-(b) Push this image to your created AWS repository:
-docker push aws_account_id.dkr.ecr.region.amazonaws.com/your-repo-name-aws:latest
-(make red = aws_account_id, region, your-repo-name-aws)
+(b) In stage 'Deploy to AWS ECR', add account ID, region, and repo name:
+docker.withRegistry('https://aws_account_id.dkr.ecr.region.amazonaws.com/your-repo-name-aws:latest, 'ecr:region:aws-credential-id') {
+                        docker.image('your-repo-name-aws').push("latest")
 
+(make red = aws_account_id, region, your-repo-name-aws, aws-credential-id)
 
 To built pipeline successfully, use 'make tidy' to pass the Linting stage.
 
+Web app is deployed on :8000
 
-Second part of the Project is related to deploy these Docker container to a small Kubernetes cluster.
+
+Second part of the Project is related to deploy these Docker container to a small Kubernetes cluster as rolling update deployment strategy, where Version B is gradually rolled out succeeding verion A. Suitable for smal bug fixes.
+
+Create AWS EKS Cluster and Node group
+1. 
