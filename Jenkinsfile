@@ -24,13 +24,13 @@ pipeline {
                 aquaMicroscanner imageName: 'alpine:latest', notCompliesCmd: 'exit 3', onDisallowed: 'fail', outputFormat: 'html'
             }
         }
-        stage('change tag') {
+        stage('Change a tag of docker image') {
             steps {
                 sh 'docker image tag ' + registry + ':$BUILD_NUMBER udacity-capstone:latest'
                 sh 'docker image ls'
             }
         }
-        stage('deployed on ECR') {
+        stage('Deploy to AWS ECR') {
             steps {
                 script {
                     docker.withRegistry('https://998598315760.dkr.ecr.us-west-2.amazonaws.com/udacity-capstone:latest', 'ecr:us-west-2:aws-cred-ecr') {
@@ -42,7 +42,7 @@ pipeline {
     }
     post {
         success {
-            echo 'Docker container deployed on Amazon ECR repository'
+            echo 'Docker image deployed to Amazon ECR repository'
         }
         failure {
             sh 'docker container stop web'
