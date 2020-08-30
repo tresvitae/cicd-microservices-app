@@ -65,7 +65,7 @@ Upgrade Jenkinsfile:
 sh 'docker image tag ' + registry + ':$BUILD_NUMBER `your-repo-name-aws`:latest'
 
 * In stage 'Deploy to AWS ECR', add account ID, region, and repo name:
-docker.withRegistry('https://aws_account_id.dkr.ecr.region.amazonaws.com/your-repo-name-aws:latest, 'ecr:region:`aws-credential-id`) { docker.image(<p style='color:red'>your-repo-name-aws</p>).push("latest") }
+docker.withRegistry('https://aws_account_id.dkr.ecr.region.amazonaws.com/your-repo-name-aws:latest, 'ecr:region:`aws-credential-id`) { docker.image('>your-repo-name-aws).push("latest") }
 
 To built pipeline successfully, use 'make tidy' to pass the Linting stage.
 
@@ -75,6 +75,9 @@ Web app is deployed on [IP address]
 
 ### Second part of the Project is related to deploy these Docker container to a small Kubernetes cluster as rolling update deployment strategy, where Version B is gradually rolled out succeeding verion A. Suitable for smal bug fixes. Kubernetes cluster deployed via CloudFormation.
 
+Install eksctl and kubectl in EC2
+1. `make aws-eksctl`
+2. `make aws-kubectl`
 
 Create AWS EKS Cluster and Node group
 1. Set up EKS permissions to IAM Role of your user: AmazonEKSClusterPolicy, AmazonEKSServicePolicy
