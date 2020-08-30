@@ -39,6 +39,9 @@ pipeline {
                 }
             }
         }
+        stage('Rolling update via AWS ECS') {
+            echo 'rolling'
+        }
     }
     post {
         success {

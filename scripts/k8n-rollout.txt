@@ -1,0 +1,14 @@
+# Checking the implementation status
+kubectl rollout status deployment <name>
+
+# Suspension of implementation
+kubectl rollout pause deployment <name>
+
+# Resume implementation
+kubectl rollout resume deployment <name>
+
+# Implementation history
+kubectl rollout history deployment <name>
+
+# Restore the previous version from history
+kubectl rollout undo deployment <name> --to-revision = <history id>

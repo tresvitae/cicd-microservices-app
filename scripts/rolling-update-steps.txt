@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+#SOURCE https://kubernetes.io/docs/tutorials/kubernetes-basics/update/update-interactive/
+#Step 1: Update the version of the app
+
+#To list your deployments:
+kubectl get deployments
+
+#To list the running Pods:
+kubectl get pods
+
+#To view the current image version of the app:
+kubectl describe pods
+
+#To update the image of the application to version 2, use the set image command, followed by the deployment name and the new image version:
+kubectl set image <deployment-name> <new-deployment-name>:v2
+
+
+#Step 2: Verify an update
+#First, let’s check that the App is running. To find out the exposed IP and Port we can use describe service:
+kubectl describe <deployment-name>
+
+#Create an environment variable called NODE_PORT that has the value of the Node port assigned:
+export NODE_PORT=$(kubectl get <deployment-name> -o go-template='{{(index .spec.ports 0).nodePort}}')
+echo NODE_PORT=$NODE_PORT
+
+#Next, we’ll do a curl to the the exposed IP and port:
+curl $(minikube ip):$NODE_PORT
+
+#We hit a different Pod with every request and we see that all Pods are running the latest version (v2).
+#The update can be confirmed also by running a rollout status command:
+kubectl rollout status <deployment-name>
+
+
+#Step 3: Rollback an update
+#Let’s perform another update, and deploy image tagged as v10 :
+kubectl set image <deployment-name> kubernetes-bootcamp=gcr.io/google-samples/kubernetes-bootcamp:v10
+
+#See the status of the deployment:
+kubectl get deployments
+
+#And something is wrong… We do not have the desired number of Pods available. List the Pods again:
+kubectl get pods
+
+#A describe command on the Pods should give more insights:
+kubectl describe pods
+
+#There is no image called v10 in the repository. Let’s roll back to our previously working version. We’ll use the rollout undo command:
+kubectl rollout undo <new-deployment-name>
+
+#The rollout command reverted the deployment to the previous known state (v2 of the image). Updates are versioned and you can revert to any previously know state of a Deployment. List again the Pods:
+kubectl get pods
+
+#Four Pods are running. Check again the image deployed on the them:
+kubectl describe pods
+
+#We see that the deployment is using a stable version of the app (v2). The Rollback was successful.
