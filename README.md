@@ -83,3 +83,5 @@ Create AWS EKS Cluster and Node group
 1. Set up EKS permissions to IAM Role of your user: AmazonEKSClusterPolicy, AmazonEKSServicePolicy
 2. Create a separate VPC for EKS
 3. Can be created in AWS Console, or via CLI:
+4. `eksctl create cluster --name prod --version 1.17 --region us-west-2 --nodegroup-name linux-nodes --node-type t2.micro --nodes 3 --nodes-min 1 --nodes-max 4 --ssh-access --managed`
+Need to give AWSCloudFormationFullAccess, eks:CreateCluster and IAMFullAccess policies to your user (see scripts/eksctl-policy.yml)
