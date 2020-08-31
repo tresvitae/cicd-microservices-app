@@ -40,12 +40,18 @@ pipeline {
             }
         }
         stage('Rolling update via AWS ECS') {
-            echo 'rolling'
+            withAWS(credentials: 'aws-cred-ecr', region: 'us-west-2') {
+                //sh 'aws eks --region us-west-2 update-kubeconfig --name prod' JEZELI 1 sh nie zadziala
+                sh 'kubectl config set-context $(kubectl config current-context) --namespace prod'
+                sh 'kubectl config use-context arn:aws:eks:us-west-2:998598315760:cluster/prod'
+                sh 'kubectl apply -f service/rolling-update.yml'
+                sh 'kubectl get all -n default'
+                //sh 'kubectl rollout status deployment default'
         }
     }
     post {
         success {
-            echo 'Docker image pushed, and deployed to Amazon ECR repository'
+            echo 'Webserver app pushed, and deployed to Amazon Web Service'
         }
         failure {
             sh 'docker container stop web'
