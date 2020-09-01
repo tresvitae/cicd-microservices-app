@@ -1,25 +1,10 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: web-app-k8n
-  labels:
-    app: web-app-k8n
-  namespace: default
-spec:
-  selector:
-    app: web-app-k8n
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-app-k8n
+  name: web-app
   namespace: default
   labels:
-    app: web-app-k8n
+    app: web-app
 spec:
   replicas: 4
   strategy:
@@ -29,27 +14,40 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: web-app-k8n
+      app: web-app
   template:
     metadata:
       labels:
-        app: web-app-k8n
+        app: web-app
     spec:
       containers:
-      - name: web-app-k8n
-        image: udacity-capstone:latest
-        imagePullPolicy: Always
-        resources: {}
+      - name: web-app
+        image: 998598315760.dkr.ecr.us-west-2.amazonaws.com/udacity-capstone #998598315760.dkr.ecr.us-west-2.amazonaws.com/udacity-capstone:latest
+        imagePullPolicy: Always #IfNotPresent
         ports:
-        - containerPort: 8000
+        - containerPort: 8080
         env:
         - name: version
           value: v1
         readinessProbe:
           httpGet:
-            path: /ready
-            port: 8000
+            path: /
+            port: 8080
           initialDelaySeconds: 20
           timeoutSeconds: 1
           periodSeconds: 10
           failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-app-service
+  namespace: default
+spec:
+  selector:
+    app: web-app
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
