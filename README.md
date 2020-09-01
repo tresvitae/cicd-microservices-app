@@ -60,7 +60,7 @@ Create AWS ECR repository:
 `aws ecr create-repository --repository-name your-repo-name-aws:latest`
 
 
-Upgrade Jenkinsfile:
+Edit Jenkinsfile:
 * In stage 'Change a tag of docker image', edit line:
 sh 'docker image tag ' + registry + ':$BUILD_NUMBER `your-repo-name-aws`:latest'
 
@@ -83,5 +83,7 @@ Create AWS EKS Cluster and Node group
 1. Set up EKS permissions to IAM Role of your user: AmazonEKSClusterPolicy, AmazonEKSServicePolicy
 2. Create a separate VPC for EKS
 3. Can be created in AWS Console, or via CLI:
-4. `eksctl create cluster --name prod --version 1.17 --region us-west-2 --nodegroup-name linux-nodes --node-type t2.micro --nodes 3 --nodes-min 1 --nodes-max 4 --ssh-access --managed`
+4. `eksctl create cluster --name prod --version 1.17 --region us-west-2 --nodegroup-name linux-nodes --node-type t2.micro --nodes 3 --nodes-min 1 --nodes-max 4 --managed`
 Need to give AWSCloudFormationFullAccess, eks:CreateCluster and IAMFullAccess policies to your user (see scripts/eksctl-policy.yml)
+5. Edit Jenkinsfile, in stage 'Rolling update via AWS ECS', set your credentials.
+6. Edit service/rolling-update.yaml file, by adding your ECR url of deployed image.
