@@ -4,19 +4,19 @@ pipeline {
     }
     agent any
     stages {
-        stage('Build') {
+        stage('Linting') {
+            steps {
+                sh 'tidy -q -e *.html'
+            }
+        }
+        stage('Build the image') {
             steps {
                 script {
                     docker.build registry + ':$BUILD_NUMBER'
                 }
                 sh 'docker image ls'
-                sh 'docker run -it --rm -d -p 8000:80 --name web ' + registry + ':$BUILD_NUMBER'
-                sh 'docker container ls'
-            }
-        }
-        stage('Linting') {
-            steps {
-                sh 'tidy -q -e *.html'
+                //sh 'docker run -it --rm -d -p 8000:80 --name web ' + registry + ':$BUILD_NUMBER'
+                //sh 'docker container ls'
             }
         }
         stage('Security Aqua MicroScanner') {
@@ -42,13 +42,14 @@ pipeline {
         stage('Rolling update via AWS ECS') {
             steps {
                 withAWS(credentials: 'aws-cred-ecr', region: 'us-west-2') {
-                    sh 'aws eks --region us-west-2 update-kubeconfig --name prod'
-                    //sh 'kubectl config set-context $(kubectl config current-context) --namespace prod'
-                    sh 'kubectl config use-context arn:aws:eks:us-west-2:998598315760:cluster/prod'
-                    sh 'ls strategy/'
-                    sh 'kubectl apply -f strategy/rolling-update.yaml'
-                    sh 'kubectl get all -n default'
-                    //sh 'kubectl rollout status deployment default'
+                    sh '''
+                        sh 'aws eks --region us-west-2 update-kubeconfig --name prod'
+                        //sh 'kubectl config set-context $(kubectl config current-context) --namespace prod'
+                        sh 'kubectl config use-context arn:aws:eks:us-west-2:998598315760:cluster/prod'
+                        sh 'kubectl apply -f strategy/rolling-update.yaml'
+                        sh 'kubectl get all -n default'
+                        //sh 'kubectl rollout status deployment default'
+                    '''
                 }
             }
         }
@@ -58,7 +59,7 @@ pipeline {
             echo 'Webserver app pushed, and deployed to Amazon Web Service'
         }
         failure {
-            sh 'docker container stop web'
+            //sh 'docker container stop web'
             sh 'docker container prune -f'
             sh 'docker image prune -af'
             echo 'BUILD FAILED'
