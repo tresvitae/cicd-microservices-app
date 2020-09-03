@@ -22,12 +22,13 @@ If status in another then active, run `make docker-start`
 
 Setup Jenkins:
 1. `make jenkins-install jenkins-start`
-2. `sudo cat /var/lib/jenkins/secrets/initialAdminPassword`
-3. Copy&paste password to website "Getting Started" of Jenkins (port 8080)
-4. Click on Install suggested plugins
-5. Set Admin user
-6. Save and Finish && Start using Jenkins
-7. Install additional packages in Manage Jenkins>Manage Plugins: 
+2. Edit the /etc/default/jenkins to replace the line ----HTTP_PORT=8080---- with ----HTTP_PORT=8000
+3. `sudo cat /var/lib/jenkins/secrets/initialAdminPassword`
+4. Copy&paste password to website "Getting Started" of Jenkins
+5. Click on Install suggested plugins
+6. Set Admin user
+7. Save and Finish && Start using Jenkins
+8. Install additional packages in Manage Jenkins>Manage Plugins: 
 Blue Ocean  
 Config API for Blue Ocean  
 Events Api for Blue Ocean  
@@ -48,13 +49,13 @@ Docker
 docker-build-step  
 CloudBees Docker Build and Publish  
 
-8. Configure AquaMicroScanner in Jenkins
-9. Add Docker installations in Global Tool Configuration in Jenkins. Set Name (can be version of installed Docker in EC2, and Installation root: /usr/bin)
-10. Setup GitHub project with Blue Ocean
-11. Give Docker and Jenkins symbiotic permissions via command: `sudo usermod -aG docker jenkins`
-12. Set up AWS credentials in Jenkins in “Manage Credentials” > icon "(global)" > "Add credentials"
-13. Generate Access key ID and Secret acces key generated in your user in AWS console (Keep the credentials for futher process of installing AWS CLI)
-14. Fill the credentials and set ID  
+9. Configure AquaMicroScanner in Jenkins
+10. Add Docker installations in Global Tool Configuration in Jenkins. Set Name (can be version of installed Docker in EC2, and Installation root: /usr/bin)
+11. Setup GitHub project with Blue Ocean
+12. Give Docker and Jenkins symbiotic permissions via command: `sudo usermod -aG docker jenkins`
+13. Set up AWS credentials in Jenkins in “Manage Credentials” > icon "(global)" > "Add credentials"
+14. Generate Access key ID and Secret acces key generated in your user in AWS console (Keep the credentials for futher process of installing AWS CLI)
+15. Fill the credentials and set ID  
 
 Configure AWS CLI and set permission for AWS ECR and EKS to your user
 1. In your EC2 instance, install and configure AWS CLI `make aws-cli` or follow the steps in [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
