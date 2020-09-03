@@ -10,8 +10,8 @@ Project created on EC2 Instance with ami-0a634ae95e11c6f91 (us-west-2 region) - 
 Preconfiguration:
 1. Build EC2 instance in AWS
 2. clone the repository  
-
-### First part of task is related to pushing the built Docker container to the AWS ECR.  
+  
+### First part of task is related to pushing the built Docker container to the AWS ECR  
 
 Setup docker:
 1. `make docker-install`
@@ -23,11 +23,11 @@ If status in another then active, run `make docker-start`
 Setup Jenkins:
 1. `make jenkins-install jenkins-start`
 2. `sudo cat /var/lib/jenkins/secrets/initialAdminPassword`
-3. copy&paste password to website "Getting Started" of Jenkins (port 8080)
-4. click on Install suggested plugins
-5. set Admin user
+3. Copy&paste password to website "Getting Started" of Jenkins (port 8080)
+4. Click on Install suggested plugins
+5. Set Admin user
 6. Save and Finish && Start using Jenkins
-7. install additional packages. Manage Jenkins>Manage Plugins: 
+7. Install additional packages in Manage Jenkins>Manage Plugins: 
 Blue Ocean  
 Config API for Blue Ocean  
 Events Api for Blue Ocean  
@@ -37,16 +37,13 @@ Pipeline implementation for Blue Ocean
 Blue Ocean Pipeline Editor  
 Display URL for Blue Ocean  
 Blue Ocean Executor Info  
-
 Pipeline: AWS Steps  
 Amazon ECR  
 CloudBees AWS Credentials Plugin  
 AWS Global Configuration  
 Amazon Elastic Container Service (ECS)
-
 Aqua MicroScanner  
 Aqua Security Scanner  
-
 Docker  
 docker-build-step  
 CloudBees Docker Build and Publish  
@@ -90,7 +87,7 @@ sh 'docker image tag ' + registry + ':$BUILD_NUMBER (your-repo-name-aws):latest'
 docker.withRegistry('https://(aws_account_id).dkr.ecr.(region).amazonaws.com/(your-repo-name-aws):latest, 'ecr:region:(aws-credential-id)) { docker.image(your-repo-name-aws).push("latest") }
 ```  
 
-### Second part of the Project is related to deploy these Docker container to a small Kubernetes cluster as rolling update deployment strategy, where Version B is gradually rolled out succeeding verion A. Suitable for smal bug fixes.  
+### Second part of the Project is related to deploy these Docker container to a small Kubernetes cluster as rolling update deployment strategy, where Version B is gradually rolled out succeeding verion A. Suitable for smal bug fixes  
 
 Install eksctl and kubectl in EC2
 1. `make aws-eksctl` or follow the steps in [AWS EKSCTL](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html)
@@ -99,16 +96,16 @@ Install eksctl and kubectl in EC2
 Create AWS EKS Cluster and Node group
 1. Can be created in AWS Console, or via CLI:
 ```bash
-eksctl create cluster --name prod --version 1.17 --region us-west-2 --nodegroup-name linux-nodes --node-type t2.micro --nodes 3 --nodes-min 1 --nodes-max 4 --managed
-```
+eksctl create cluster --name web-cluster --version 1.17 --region us-west-2 --nodegroup-name web-nodes --node-type t2.micro --nodes 3 --nodes-min 1 --nodes-max 4 --managed
+```  
 Need to give necessary policies to your user (see scripts/eksctl-policy.yml)
 2. Edit Jenkinsfile, in stage 'Rolling update via AWS ECS', set your credentials.
 3. Edit service/rolling-update.yaml file, by adding your ECR url of deployed image.  
 
-
+  
 ## Implementation the Project:  
 
-Web app is deployed on [IP address]  
+Web app is deployed on localhost:8080  
 
 
 To built pipeline successfully, use 'make tidy' to pass the Linting stage.  

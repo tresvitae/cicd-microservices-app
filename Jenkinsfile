@@ -43,12 +43,12 @@ pipeline {
             steps {
                 withAWS(credentials: 'aws-cred-ecr', region: 'us-west-2') {
                     sh '''
-                        sh 'aws eks --region us-west-2 update-kubeconfig --name prod'
-                        //sh 'kubectl config set-context $(kubectl config current-context) --namespace prod'
-                        sh 'kubectl config use-context arn:aws:eks:us-west-2:998598315760:cluster/prod'
-                        sh 'kubectl apply -f strategy/rolling-update.yaml'
-                        sh 'kubectl get all -n default'
-                        //sh 'kubectl rollout status deployment default'
+                        aws eks --region us-west-2 update-kubeconfig --name prod-cluster
+                        #//sh 'kubectl config set-context $(kubectl config current-context) --namespace prod-cluster'
+                        kubectl config use-context arn:aws:eks:us-west-2:998598315760:cluster/prod-cluster
+                        kubectl apply -f strategy/rolling-update.yaml
+                        kubectl get all -n default
+                        #//sh 'kubectl rollout status deployment default'
                     '''
                 }
             }
