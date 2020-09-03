@@ -14,6 +14,7 @@ pipeline {
                 script {
                     docker.build registry + ':$BUILD_NUMBER'
                 }
+                sh 'docker image tag ' + registry + ':$BUILD_NUMBER udacity-capstone:latest'
                 sh 'docker image ls'
                 //sh 'docker run -it --rm -d -p 8000:80 --name web ' + registry + ':$BUILD_NUMBER'
                 //sh 'docker container ls'
@@ -22,12 +23,6 @@ pipeline {
         stage('Security Aqua MicroScanner') {
             steps { 
                 aquaMicroscanner imageName: 'alpine:latest', notCompliesCmd: 'exit 3', onDisallowed: 'fail', outputFormat: 'html'
-            }
-        }
-        stage('Change a tag of docker image') {
-            steps {
-                sh 'docker image tag ' + registry + ':$BUILD_NUMBER udacity-capstone:latest'
-                sh 'docker image ls'
             }
         }
         stage('Push to AWS ECR') {
