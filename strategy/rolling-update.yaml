@@ -2,11 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: web-app
-  namespace: default
   labels:
     app: web-app
+  namespace: default
 spec:
-  replicas: 4
+  replicas: 3
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -22,32 +22,10 @@ spec:
     spec:
       containers:
       - name: web-app
-        image: 998598315760.dkr.ecr.us-west-2.amazonaws.com/udacity-capstone #998598315760.dkr.ecr.us-west-2.amazonaws.com/udacity-capstone:latest
+        image: 998598315760.dkr.ecr.us-west-2.amazonaws.com/udacity-capstone
         imagePullPolicy: Always #IfNotPresent
         ports:
-        - containerPort: 8080
+        - containerPort: 80
         env:
         - name: version
-          value: v1
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 8080
-          initialDelaySeconds: 20
-          timeoutSeconds: 1
-          periodSeconds: 10
-          failureThreshold: 3
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: web-app-service
-  namespace: default
-spec:
-  selector:
-    app: web-app
-  type: NodePort
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
+          value: v2
