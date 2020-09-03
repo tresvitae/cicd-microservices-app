@@ -42,7 +42,7 @@ Pipeline: AWS Steps
 Amazon ECR  
 CloudBees AWS Credentials Plugin  
 AWS Global Configuration  
-Amazon Elastic Container Service (ECS)
+Amazon Elastic Container Service (ECS)  
 Aqua MicroScanner  
 Aqua Security Scanner  
 Docker  
@@ -78,14 +78,14 @@ aws ecr get-login-password --region (working_region) | docker login --username A
 ```  
 
 Edit Jenkinsfile:
-* In stage 'Change a tag of docker image', edit line:
+* Change enviroment's registory to your created name:
 ```bash
-sh 'docker image tag ' + registry + ':$BUILD_NUMBER (your-repo-name-aws):latest'
+        registry = 'udacity-capstone:$BUILD_NUMBER'
 ```  
 
-* In stage 'Deploy to AWS ECR', add account ID, region, and repo name:
+* In stage 'Deploy to AWS ECR', add account ID, and region:
 ```bash
-docker.withRegistry('https://(aws_account_id).dkr.ecr.(region).amazonaws.com/(your-repo-name-aws):latest, 'ecr:region:(aws-credential-id)) { docker.image(your-repo-name-aws).push("latest") }
+docker.withRegistry('https://(aws_account_id).dkr.ecr.(region).amazonaws.com/' + registry, 'ecr:region:(aws-credential-id)) { docker.image(your-repo-name-aws).push($BUILD_NUMBER) }
 ```  
 
 ### Second part of the Project is related to deploy these Docker container to a small Kubernetes cluster as rolling update deployment strategy, where Version B is gradually rolled out succeeding verion A. Suitable for smal bug fixes  
