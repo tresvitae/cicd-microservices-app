@@ -11,8 +11,6 @@ jenkins-start:
 	sudo systemctl enable jenkins
 	sudo systemctl status jenkins
 
-jenkins: jenkins-install jenkins-start
-
 tidy:
 	sudo apt install -y tidy
 

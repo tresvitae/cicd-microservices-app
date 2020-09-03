@@ -21,14 +21,15 @@ Setup docker:
 If status in another then active, run `make docker-start`  
 
 Setup Jenkins:
-1. `make jenkins-install jenkins-start`
-2. Edit the /etc/default/jenkins to replace the line ----HTTP_PORT=8080---- with ----HTTP_PORT=8000
-3. `sudo cat /var/lib/jenkins/secrets/initialAdminPassword`
-4. Copy&paste password to website "Getting Started" of Jenkins
-5. Click on Install suggested plugins
-6. Set Admin user
-7. Save and Finish && Start using Jenkins
-8. Install additional packages in Manage Jenkins>Manage Plugins: 
+1. `make jenkins-install`
+2. Edit the /etc/default/jenkins  to replace the port in HTTP_PORT and --httpPort in JENKINS_ARGS to 8000
+3. `sudo service jenkins restart` or may to restart instance
+4. `sudo cat /var/lib/jenkins/secrets/initialAdminPassword`
+5. Copy&paste password to website "Getting Started" of Jenkins
+6. Click on Install suggested plugins
+7. Set Admin user
+8. Save and Finish && Start using Jenkins
+9. Install additional packages in Manage Jenkins>Manage Plugins: 
 Blue Ocean  
 Config API for Blue Ocean  
 Events Api for Blue Ocean  
@@ -49,13 +50,13 @@ Docker
 docker-build-step  
 CloudBees Docker Build and Publish  
 
-9. Configure AquaMicroScanner in Jenkins
-10. Add Docker installations in Global Tool Configuration in Jenkins. Set Name (can be version of installed Docker in EC2, and Installation root: /usr/bin)
-11. Setup GitHub project with Blue Ocean
-12. Give Docker and Jenkins symbiotic permissions via command: `sudo usermod -aG docker jenkins`
-13. Set up AWS credentials in Jenkins in “Manage Credentials” > icon "(global)" > "Add credentials"
-14. Generate Access key ID and Secret acces key generated in your user in AWS console (Keep the credentials for futher process of installing AWS CLI)
-15. Fill the credentials and set ID  
+10. Configure AquaMicroScanner in Jenkins
+11. Add Docker installations in Global Tool Configuration in Jenkins. Set Name (can be version of installed Docker in EC2, and Installation root: /usr/bin)
+12. Setup GitHub project with Blue Ocean
+13. Give Docker and Jenkins symbiotic permissions via command: `sudo usermod -aG docker jenkins`
+14. Set up AWS credentials in Jenkins in “Manage Credentials” > icon "(global)" > "Add credentials"
+15. Generate Access key ID and Secret acces key generated in your user in AWS console (Keep the credentials for futher process of installing AWS CLI)
+16. Fill the credentials and set ID  
 
 Configure AWS CLI and set permission for AWS ECR and EKS to your user
 1. In your EC2 instance, install and configure AWS CLI `make aws-cli` or follow the steps in [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
