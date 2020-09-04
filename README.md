@@ -96,13 +96,19 @@ Install eksctl and kubectl in EC2
 2. `make aws-kubectl` or follow the steps in [AWS KUBECTL](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html)  
 
 Create AWS EKS Cluster and Node group
-1. Can be created in AWS Console, or via CLI:
+1. Use CloudFormationt scrip to create EKS Cluster:
+To deploy this infrastructure there is a helper script included in the repository. It can be used like this: 
 ```bash
-eksctl create cluster --name web-cluster --version 1.17 --region us-west-2 --nodegroup-name web-nodes --node-type t2.micro --nodes 3 --nodes-min 1 --nodes-max 4 --managed
+aws cloudformation create-stack --stack-name web-cluster --template-body file://strategy/eks-cluster.yaml --parameters file://strategy/eks-cluster-param.json --region=us-west-2`
+aws cloudformation create-stack --stack-name web-node --template-body file://strategy/eks-nodegroup.yaml --parameters file://strategy/eks-nodegroup-param.json --region=us-west-2
 ```  
-Need to give necessary policies to your user (see scripts/eksctl-policy.yml)
-2. Edit Jenkinsfile, in stage 'Rolling update via AWS ECS', set your credentials.
-3. Edit service/rolling-update.yaml file, by adding your ECR url of deployed image.  
+2. Alternativly, can be created in AWS Console, or via CLI:
+```bash
+eksctl create cluster --name web-cluster --version 1.17 --region us-west-2 --nodegroup-name web-node --node-type t2.micro --nodes 3 --nodes-min 1 --nodes-max 4 --managed
+```  
+Also, you need to give necessary policies to your user (see scripts/eksctl-policy.yml)
+3. Edit Jenkinsfile, in stage 'Rolling update via AWS EKS', set your credentials.
+4. Edit service/rolling-update.yaml file, by adding your ECR url of deployed image.  
 
   
 ## Implementation the Project:  
