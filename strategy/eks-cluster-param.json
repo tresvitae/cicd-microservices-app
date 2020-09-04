@@ -2,11 +2,7 @@
 [
 	{
 		"ParameterKey": "ProjectName",
-        "ParameterValue": "WebServiceApp"
-    },
-    {
-		"ParameterKey": "EnvironmentName",
-        "ParameterValue": "Development"
+        "ParameterValue": "web-cluster"
     },
     {
         "ParameterKey": "VPCRange",

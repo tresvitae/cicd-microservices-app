@@ -408,3 +408,7 @@ Outputs:
     Export:
       Name: !Sub '${ProjectName}::VPC'
     Value: !Ref VPC
+  ControlPlane:
+    Export:
+      Name: !Sub '${ProjectName}::ControlPlane'
+    Value: !Ref ControlPlane
