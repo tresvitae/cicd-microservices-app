@@ -1,0 +1,162 @@
+Description: >
+  Patryk Futa
+  Capstone Udacity Project
+  EKS Managed Nodes
+
+Parameters:
+  ProjectName:
+    Description: Web-server-app
+    Type: String
+  EnvironmentName:
+    Description: An environment name of the Website.
+    Type: String
+    
+Mappings:
+  ServicePrincipalPartitionMap:
+    aws:
+      EC2: ec2.amazonaws.com
+      EKS: eks.amazonaws.com
+      EKSFargatePods: eks-fargate-pods.amazonaws.com
+    aws-cn:
+      EC2: ec2.amazonaws.com.cn
+      EKS: eks.amazonaws.com
+      EKSFargatePods: eks-fargate-pods.amazonaws.com
+    aws-us-gov:
+      EC2: ec2.amazonaws.com
+      EKS: eks.amazonaws.com
+      EKSFargatePods: eks-fargate-pods.amazonaws.com
+
+Resources:
+  LaunchTemplate:
+    Type: 'AWS::EC2::LaunchTemplate'
+    Properties:
+      LaunchTemplateData:
+        BlockDeviceMappings:
+          - DeviceName: /dev/xvda
+            Ebs:
+              VolumeSize: 40
+              VolumeType: gp2
+        InstanceType: t2.micro
+        KeyName: >-
+          eksctl-web-cluster-nodegroup-web-nodes-ef:ad:f9:f7:b3:bb:35:40:ec:be:41:f5:cf:49:ea:74
+        MetadataOptions:
+          HttpPutResponseHopLimit: 2
+          HttpTokens: optional
+        SecurityGroupIds:
+          - !ImportValue 'eksctl-web-cluster-cluster::ClusterSecurityGroupId'
+          - !Ref SSH
+        TagSpecifications:
+          - ResourceType: instance
+            Tags:
+              - Key: Name
+                Value: web-cluster-web-nodes-Node
+              - Key: alpha.eksctl.io/nodegroup-type
+                Value: managed
+              - Key: alpha.eksctl.io/nodegroup-name
+                Value: web-nodes
+      LaunchTemplateName: !Sub '${ProjectName}'
+  ManagedNodeGroup:
+    Type: 'AWS::EKS::Nodegroup'
+    Properties:
+      AmiType: AL2_x86_64
+      ClusterName: prod
+      Labels:
+        alpha.eksctl.io/cluster-name: web-cluster
+        alpha.eksctl.io/nodegroup-name: web-nodes
+      NodeRole: !GetAtt 
+        - NodeInstanceRole
+        - Arn
+      NodegroupName: web-nodes
+      ScalingConfig:
+        DesiredSize: 3
+        MaxSize: 4
+        MinSize: 1
+      Subnets: !Split 
+        - ','
+        - !ImportValue 'eksctl-web-cluster-cluster::SubnetsPublic'
+      Tags:
+        alpha.eksctl.io/nodegroup-name: web-nodes
+        alpha.eksctl.io/nodegroup-type: managed
+      LaunchTemplate:
+        Id: !Ref LaunchTemplate
+  NodeInstanceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - 'sts:AssumeRole'
+            Effect: Allow
+            Principal:
+              Service:
+                - !FindInMap 
+                  - ServicePrincipalPartitionMap
+                  - !Ref 'AWS::Partition'
+                  - EC2
+        Version: 2012-10-17
+      ManagedPolicyArns:
+        - !Sub >-
+          arn:${AWS::Partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonEKSWorkerNodePolicy'
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonEKS_CNI_Policy'
+      Path: /
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}/NodeInstanceRole'
+  SSH:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Allow SSH access
+      GroupName: !Sub '${ProjectName}-remoteAccess'
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          FromPort: 22
+          IpProtocol: tcp
+          ToPort: 22
+        - CidrIpv6: '::/0'
+          FromPort: 22
+          IpProtocol: tcp
+          ToPort: 22
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}/SSH'
+      VpcId: !ImportValue 'eksctl-web-cluster-cluster::VPC'
+
+
+
+
+
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Ref ProjectName
+      Cpu: 256
+      Memory: 512
+      NetworkMode: !ImportValue 'eksctl-web-cluster-cluster::VPC'
+      ExecutionRoleArn: !Ref NodeInstanceRole
+      ContainerDefinitions:
+      - Name: web-app
+        Image: udacity-capstone:latest
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Ref 'CloudwatchLogsGroup'
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: ecs-web-app
+        PortMappings:
+        - ContainerPort: 80
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: deployment-web-service-app
+      Cluster: !ImportValue 'eksctl-web-cluster-cluster::ControlPlane'
+      DesiredCount: 1
+      LaunchType: EC2
+      TaskDefinition: !Ref TaskDefinition
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets: !ImportValue 'eksctl-web-cluster-cluster::SubnetsPublic'
+          SecurityGroups:
+            - !GetAtt !ImportValue 'eksctl-web-cluster-cluster::SubnetsPublic'
