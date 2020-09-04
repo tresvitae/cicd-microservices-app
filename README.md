@@ -64,6 +64,7 @@ Configure AWS CLI and set permission for AWS ECR and EKS to your user
 * AmazonEC2ContainerRegistryFullAccess
 * AmazonEKSClusterPolicy
 * AmazonEKSServicePolicy
+* AmazonEKSWorkerNodePolicy
 * AWSCloudFormationFullAccess
 * IAMFullAccess  
 
@@ -95,11 +96,13 @@ Install eksctl and kubectl in EC2
 1. `make aws-eksctl` or follow the steps in [AWS EKSCTL](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html)
 2. `make aws-kubectl` or follow the steps in [AWS KUBECTL](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html)  
 
+Set Docker CLI clinet: `docker login --username your_name --password your_password`. Thanks to that you will have access to pull image to Kubernetes.
+
 Create AWS EKS Cluster and Node group
 1. Use CloudFormationt scrip to create EKS Cluster:
 To deploy this infrastructure there is a helper script included in the repository. It can be used like this: 
 ```bash
-aws cloudformation create-stack --stack-name web-cluster --template-body file://strategy/eks-cluster.yaml --parameters file://strategy/eks-cluster-param.json --region=us-west-2`
+aws cloudformation create-stack --stack-name web-cluster --template-body file://strategy/eks-cluster.yaml --parameters file://strategy/eks-cluster-param.json --region=us-west-2
 aws cloudformation create-stack --stack-name web-node --template-body file://strategy/eks-nodegroup.yaml --parameters file://strategy/eks-nodegroup-param.json --region=us-west-2
 ```  
 2. Alternativly, can be created in AWS Console, or via CLI:
@@ -122,10 +125,11 @@ Also, you need to give necessary policies to your user (see scripts/eksctl-polic
 7. To see created Pods run `kubectl get pods`
 8. Expose the web-server to the Internet
 `kubectl expose deployment web-app --name=web-app-service --type=LoadBalancer --port 80 --target-port 8080`
-9. To see exposed IP, run `kubectl get service`
+9. To see exposed IP, run `kubectl get service`  
 
-4. Edit Jenkinsfile, in stage 'Rolling update via AWS EKS', set your credentials.
-4. Edit service/rolling-update.yaml file, by adding your ECR url of deployed image.  
+
+Finally: edit Jenkinsfile, in stage 'Rolling update via AWS EKS', set your credentials.
+Also, edit service/rolling-update.yaml file, by adding your ECR url of deployed image.  
 
   
 ## Implementation the Project:  
