@@ -1,6 +1,6 @@
 pipeline {
     environment {
-        registry = 'udacity-capstone:$BUILD_NUMBER'
+        registry = 'udacity-capstone:latest'
     }
     agent any
     stages {
@@ -26,18 +26,15 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://998598315760.dkr.ecr.us-west-2.amazonaws.com/' + registry, 'ecr:us-west-2:aws-cred-ecr') {
-                        docker.image('udacity-capstone').push($BUILD_NUMBER)
+                        docker.image('udacity-capstone').push('latest')
                     }
                 }
             }
         }
-        stage('Rolling update via AWS ECS') {
+        stage('Rolling update via AWS EKS') {
             steps {
                 withAWS(credentials: 'aws-cred-ecr', region: 'us-west-2') {
                     sh '''
-                        aws eks --region us-west-2 update-kubeconfig --name dev-cluster
-                        #//sh 'kubectl config set-context $(kubectl config current-context) --namespace dev-cluster'
-                        kubectl config use-context arn:aws:eks:us-west-2:998598315760:cluster/dev-cluster
                         kubectl apply -f strategy/rolling-update.yaml
                         kubectl get all -n default
                         #//sh 'kubectl rollout status deployment default'

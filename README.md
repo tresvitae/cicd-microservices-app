@@ -107,7 +107,24 @@ aws cloudformation create-stack --stack-name web-node --template-body file://str
 eksctl create cluster --name web-cluster --version 1.17 --region us-west-2 --nodegroup-name web-node --node-type t2.micro --nodes 3 --nodes-min 1 --nodes-max 4 --managed
 ```  
 Also, you need to give necessary policies to your user (see scripts/eksctl-policy.yml)
-3. Edit Jenkinsfile, in stage 'Rolling update via AWS EKS', set your credentials.
+3. Build the image of web-app
+* `docker build -t udacity-capstone:latest .`
+4. (optional) Test the container:
+* `docker run -it --rm -d -p 8080:8080 udacity-capstone:latest`
+* `curl http://localhost:8080`
+5. Build Service and Deployment of web-server in kubernetes cluster
+* `aws eks --region us-west-2 update-kubeconfig --name web-cluster` or `kubectl config set-context $(kubectl config current-context) --namespace web-cluster`
+* `kubectl config use-context arn:aws:eks:us-west-2:998598315760:cluster/web-cluster` (Change to your region and aws id)
+* `kubectl create deployment web-app --image=udacity-capstone:latest`
+6. set number of replicas to 3 and add HorizontalPodAutoscaler resource for your Deployment
+`kubectl scale deployment web-app --replicas=3`
+`kubectl autoscale deployment web-app --cpu-percent=80 --min=1 --max=4`
+7. To see created Pods run `kubectl get pods`
+8. Expose the web-server to the Internet
+`kubectl expose deployment web-app --name=web-app-service --type=LoadBalancer --port 80 --target-port 8080`
+9. To see exposed IP, run `kubectl get service`
+
+4. Edit Jenkinsfile, in stage 'Rolling update via AWS EKS', set your credentials.
 4. Edit service/rolling-update.yaml file, by adding your ECR url of deployed image.  
 
   
