@@ -55,3 +55,18 @@ kubectl get pods
 kubectl describe pods
 
 #We see that the deployment is using a stable version of the app (v2). The Rollback was successful.
+
+#List all services running in your cluster.
+kubectl get svc --all-namespaces
+
+#Delete any services that have an associated EXTERNAL-IP value. These services are fronted by an Elastic Load Balancing load balancer, and you must delete them in Kubernetes to allow the load balancer and associated resources to be properly released.
+kubectl delete svc service-name
+
+#You can delete all the pods in a single namespace with this command:
+kubectl delete --all pods --namespace=foo
+
+#You can also delete all deployments in namespace which will delete all pods attached with the deployments corresponding to the namespace
+kubectl delete --all deployments --namespace=foo
+
+#You can delete all namespaces and every object in every namespace (but not un-namespaced objects, like nodes and some events) with this command:
+kubectl delete --all namespaces

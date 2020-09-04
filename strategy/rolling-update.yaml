@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: web-app
-        image: 998598315760.dkr.ecr.us-west-2.amazonaws.com/udacity-capstone
+        image: udacity-capstone:latest # OR ECR?????? will be successful? due to 2 images
         imagePullPolicy: Always #IfNotPresent
         ports:
         - containerPort: 80
