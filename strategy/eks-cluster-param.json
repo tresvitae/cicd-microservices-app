@@ -9,27 +9,27 @@
         "ParameterValue": "10.0.0.0/16"
     },
     {
-		"ParameterKey": "SubnetPrivate1",
+		"ParameterKey": "SubnetPrivateUSWEST2A",
         "ParameterValue": "10.0.0.0/24"
     },
     {
-		"ParameterKey": "SubnetPrivate2",
+		"ParameterKey": "SubnetPrivateUSWEST2B",
         "ParameterValue": "10.0.1.0/24"
     },
     {
-		"ParameterKey": "SubnetPrivate3",
+		"ParameterKey": "SubnetPrivateUSWEST2C",
         "ParameterValue": "10.0.2.0/24"
     },
     {
-		"ParameterKey": "SubnetPublic1",
+		"ParameterKey": "SubnetPublicUSWEST2A",
         "ParameterValue": "10.0.3.0/24"
     },
     {
-		"ParameterKey": "SubnetPublic2",
+		"ParameterKey": "SubnetPublicUSWEST2B",
         "ParameterValue": "10.0.4.0/24"
     },
     {
-		"ParameterKey": "SubnetPublic3",
+		"ParameterKey": "SubnetPublicUSWEST2C",
         "ParameterValue": "10.0.5.0/24"
     }
 ]

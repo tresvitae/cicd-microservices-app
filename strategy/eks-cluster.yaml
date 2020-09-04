@@ -14,27 +14,27 @@ Parameters:
     Description: VPC CIRD range of infrastructure.
     Type: String
     Default: 10.0.0.0/16
-  SubnetPrivate1:
+  SubnetPrivateUSWEST2C:
     Description: IP range of 10.0.0.0 - 10.0.0.255 for Private Subnet 1
     Type: String
     Default: 10.0.0.0/24
-  SubnetPrivate2:
+  SubnetPrivateUSWEST2B:
     Description: IP range of 10.0.1.0 - 10.0.1.255 for Private Subnet 2
     Type: String
     Default: 10.0.1.0/24
-  SubnetPrivate3:
+  SubnetPrivateUSWEST2A:
     Description: IP range of 10.0.2.0 - 10.0.2.255 for Private Subnet 3
     Type: String
     Default: 10.0.2.0/24
-  SubnetPublic1:
+  SubnetPublicUSWEST2C:
     Description: IP range of 10.0.3.0 - 10.0.3.255 for Public Subnet 1
     Type: String
     Default: 10.0.3.0/24
-  SubnetPublic2:
+  SubnetPublicUSWEST2B:
     Description: IP range of 10.0.4.0 - 10.0.4.255 for String Subnet 2
     Type: String
     Default: 10.0.4.0/24
-  SubnetPublic3:
+  SubnetPublicUSWEST2A:
     Description: IP range of 10.0.5.0 - 10.0.5.255 for String Subnet 3
     Type: String
     Default: 10.0.5.0/24
@@ -56,12 +56,12 @@ Resources:
         SecurityGroupIds:
           - !Ref ControlPlaneSecurityGroup
         SubnetIds:
-          - !Ref SubnetPublic1
-          - !Ref SubnetPublic2
-          - !Ref SubnetPublic3
-          - !Ref SubnetPrivate1
-          - !Ref SubnetPrivate2
-          - !Ref SubnetPrivate3
+          - !Ref SubnetPublicUSWEST2C
+          - !Ref SubnetPublicUSWEST2B
+          - !Ref SubnetPublicUSWEST2A
+          - !Ref SubnetPrivateUSWEST2C
+          - !Ref SubnetPrivateUSWEST2B
+          - !Ref SubnetPrivateUSWEST2A
       RoleArn: !GetAtt 
         - ServiceRole
         - Arn
@@ -119,7 +119,7 @@ Resources:
       AllocationId: !GetAtt 
         - NATIP
         - AllocationId
-      SubnetId: !Ref SubnetPublic1
+      SubnetId: !Ref SubnetPublicUSWEST2A
       Tags:
         - Key: Name
           Value: !Sub '${ProjectName}/NATGateway'
@@ -214,32 +214,32 @@ Resources:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
       RouteTableId: !Ref PrivateRouteTable1
-      SubnetId: !Ref SubnetPrivate1
+      SubnetId: !Ref SubnetPrivateUSWEST2A
   RouteTableAssociationPrivate2:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
       RouteTableId: !Ref PrivateRouteTable2
-      SubnetId: !Ref SubnetPrivate2
+      SubnetId: !Ref SubnetPrivateUSWEST2B
   RouteTableAssociationPrivate3:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
       RouteTableId: !Ref PrivateRouteTable3
-      SubnetId: !Ref SubnetPrivate3
+      SubnetId: !Ref SubnetPrivateUSWEST2C
   RouteTableAssociationPublic1:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
       RouteTableId: !Ref PublicRouteTable
-      SubnetId: !Ref SubnetPublic1
+      SubnetId: !Ref SubnetPublicUSWEST2A
   RouteTableAssociationPublic2:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
       RouteTableId: !Ref PublicRouteTable
-      SubnetId: !Ref SubnetPublic2
+      SubnetId: !Ref SubnetPublicUSWEST2B
   RouteTableAssociationPublic3:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
       RouteTableId: !Ref PublicRouteTable
-      SubnetId: !Ref SubnetPublic3
+      SubnetId: !Ref SubnetPublicUSWEST2C
   ServiceRole:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -264,74 +264,74 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub '${ProjectName}/ServiceRole'
-  SubnetPrivate1:
+  SubnetPrivateUSWEST2A:
     Type: 'AWS::EC2::Subnet'
     Properties:
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
-      CidrBlock: !Ref SubnetPrivate1
+      CidrBlock: !Ref SubnetPrivateUSWEST2A
       Tags:
         - Key: kubernetes.io/role/internal-elb
           Value: '1'
         - Key: Name
-          Value: !Sub '${ProjectName}/SubnetPrivate1'
+          Value: !Sub '${ProjectName}/SubnetPrivateUSWEST2A'
       VpcId: !Ref VPC
-  SubnetPrivate2:
+  SubnetPrivateUSWEST2B:
     Type: 'AWS::EC2::Subnet'
     Properties:
       AvailabilityZone: !Select [ 1, !GetAZs '' ]
-      CidrBlock: !Ref SubnetPrivate2
+      CidrBlock: !Ref SubnetPrivateUSWEST2B
       Tags:
         - Key: kubernetes.io/role/internal-elb
           Value: '1'
         - Key: Name
-          Value: !Sub '${ProjectName}/SubnetPrivate2'
+          Value: !Sub '${ProjectName}/SubnetPrivateUSWEST2B'
       VpcId: !Ref VPC
-  SubnetPrivate3:
+  SubnetPrivateUSWEST2C:
     Type: 'AWS::EC2::Subnet'
     Properties:
       AvailabilityZone: !Select [ 2, !GetAZs '' ]
-      CidrBlock: !Ref SubnetPrivate3
+      CidrBlock: !Ref SubnetPrivateUSWEST2C
       Tags:
         - Key: kubernetes.io/role/internal-elb
           Value: '1'
         - Key: Name
-          Value: !Sub '${ProjectName}/SubnetPrivate3'
+          Value: !Sub '${ProjectName}/SubnetPrivateUSWEST2C'
       VpcId: !Ref VPC
-  SubnetPublic1:
+  SubnetPublicUSWEST2A:
     Type: 'AWS::EC2::Subnet'
     Properties:
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
-      CidrBlock: !Ref SubnetPublic1
+      CidrBlock: !Ref SubnetPublicUSWEST2A
       MapPublicIpOnLaunch: true
       Tags:
         - Key: kubernetes.io/role/elb
           Value: '1'
         - Key: Name
-          Value: !Sub '${ProjectName}/SubnetPublic1'
+          Value: !Sub '${ProjectName}/SubnetPublicUSWEST2A'
       VpcId: !Ref VPC
-  SubnetPublic2:
+  SubnetPublicUSWEST2B:
     Type: 'AWS::EC2::Subnet'
     Properties:
       AvailabilityZone: !Select [ 1, !GetAZs '' ]
-      CidrBlock: !Ref SubnetPublic2
+      CidrBlock: !Ref SubnetPublicUSWEST2B
       MapPublicIpOnLaunch: true
       Tags:
         - Key: kubernetes.io/role/elb
           Value: '1'
         - Key: Name
-          Value: !Sub '${ProjectName}/SubnetPublic2'
+          Value: !Sub '${ProjectName}/SubnetPublicUSWEST2B'
       VpcId: !Ref VPC
-  SubnetPublic3:
+  SubnetPublicUSWEST2C:
     Type: 'AWS::EC2::Subnet'
     Properties:
       AvailabilityZone: !Select [ 2, !GetAZs '' ]
-      CidrBlock: !Ref SubnetPublic3
+      CidrBlock: !Ref SubnetPublicUSWEST2C
       MapPublicIpOnLaunch: true
       Tags:
         - Key: kubernetes.io/role/elb
           Value: '1'
         - Key: Name
-          Value: !Sub '${ProjectName}/SubnetPublic3'
+          Value: !Sub '${ProjectName}/SubnetPublicUSWEST2C'
       VpcId: !Ref VPC
   VPC:
     Type: 'AWS::EC2::VPC'
@@ -393,17 +393,17 @@ Outputs:
       Name: !Sub '${ProjectName}::SubnetsPrivate'
     Value: !Join 
       - ','
-      - - !Ref SubnetPrivate1
-        - !Ref SubnetPrivate2
-        - !Ref SubnetPrivate3
+      - - !Ref SubnetPrivateUSWEST2C
+        - !Ref SubnetPrivateUSWEST2B
+        - !Ref SubnetPrivateUSWEST2A
   SubnetsPublic:
     Export:
       Name: !Sub '${ProjectName}::SubnetsPublic'
     Value: !Join 
       - ','
-      - - !Ref SubnetPublic1
-        - !Ref SubnetPublic2
-        - !Ref SubnetPublic3
+      - - !Ref SubnetPublicUSWEST2C
+        - !Ref SubnetPublicUSWEST2B
+        - !Ref SubnetPublicUSWEST2A
   VPC:
     Export:
       Name: !Sub '${ProjectName}::VPC'
@@ -412,3 +412,7 @@ Outputs:
     Export:
       Name: !Sub '${ProjectName}::ControlPlane'
     Value: !Ref ControlPlane
+  ClusterSharedNodeSecurityGroup:
+    Export:
+      Name: !Sub '${ProjectName}/ClusterSharedNodeSecurityGroup'
+    Value: !Ref ClusterSharedNodeSecurityGroup
