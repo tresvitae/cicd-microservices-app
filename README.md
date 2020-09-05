@@ -10,7 +10,15 @@ Project created on EC2 Instance with ami-0a634ae95e11c6f91 (us-west-2 region) - 
 Preconfiguration:
 1. Build EC2 instance in AWS
 2. clone the repository  
-  
+To avoid all installation and configuration of jenkins docker, aws cli, eksctl, and kubectl, add `ec2-setup.sh` file to User Data in a process of configuration a EC2 Instance. Check if all has been installed successfully:  
+```bash
+docker --version
+aws --version
+eksctl version
+kubectl version --short --client
+java -version
+```  
+
 ### First part of task is related to pushing the built Docker container to the AWS ECR  
 
 Setup docker:
