@@ -1,19 +1,25 @@
 pipeline {
     environment {
-        registry = 'udacity-capstone:latest'
+        registry = 'tresvitae/webserver-app:v1'
+        rolling_update = 'tresvitae/webserver-app:v1.1'
+        ecr_repo = 'udacity-capstone:latest'
     }
     agent any
     stages {
         stage('Linting') {
             steps {
-                sh 'tidy -q -e *.go'
+                sh 'tidy -q -e *.index'
             }
         }
         stage('Build the image') {
             steps {
-                sh 'docker build -t ' + registry + " ."
+                script {
+                    docker.build registry 
+                }
+                //  + ':$BUILD_NUMBER'
                 sh 'docker image ls'
-                //sh 'docker run -it --rm -d -p 8080:8080 --name web ' + registry
+                sh 'docker tag ' + registry + " " + ecr_repo
+                //sh 'docker run -it --rm -d -p 8080:80 --name web ' + registry
                 //sh 'docker container ls'
             }
         }
@@ -25,7 +31,7 @@ pipeline {
         stage('Push to AWS ECR') {
             steps {
                 script {
-                    docker.withRegistry('https://998598315760.dkr.ecr.us-west-2.amazonaws.com/' + registry, 'ecr:us-west-2:aws-cred-ecr') {
+                    docker.withRegistry('https://998598315760.dkr.ecr.us-west-2.amazonaws.com/' + ecr_repo, 'ecr:us-west-2:aws-cred-ecr') {
                         docker.image('udacity-capstone').push('latest')
                     }
                 }
