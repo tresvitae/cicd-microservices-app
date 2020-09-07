@@ -21,7 +21,7 @@ chmod +x ./kubectl
 mv ./kubectl /usr/local/bin
 echo 'export PATH=$PATH:$HOME/bin' >> ~/.bash_profile
 #   Install Jenkins
-sudo apt install -y openjdk-8-jdk
+apt install -y openjdk-8-jdk
 wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
 sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
 apt-get update

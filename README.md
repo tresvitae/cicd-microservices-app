@@ -17,6 +17,7 @@ aws --version
 eksctl version
 kubectl version --short --client
 java -version
+docker images # Without sudo privileges. If not, run sudo chmod 666 /var/run/docker.sock
 ```  
 
 ### First part of task is related to pushing the built Docker container to the AWS ECR  
@@ -141,6 +142,9 @@ Also, edit service/rolling-update.yaml file, by adding your ECR url of deployed 
 
   
 ## Implementation the Project:  
+Before perform rolling update via Jenkins pipeline, web app has to be implemented and exposed to the Internet in created EKS before. Follow the step 5 from Create AWS EKS Cluster and Node group, or run:
+`kubectl apply -f strategy/deployment.yaml`  
+
 
 Web app is deployed on localhost:8080  
 

@@ -1,25 +1,25 @@
 pipeline {
     environment {
-        registry = 'tresvitae/webserver-app:v1'
-        rolling_update = 'tresvitae/webserver-app:v1.1'
+        registry = 'tresvitae/webserver-app:v1' //First repo
+        rolling_update = 'tresvitae/webserver-app:v2'
         ecr_repo = 'udacity-capstone:latest'
     }
     agent any
     stages {
         stage('Linting') {
             steps {
-                sh 'tidy -q -e *.index'
+                sh 'tidy -q -e *.html'
             }
         }
         stage('Build the image') {
             steps {
                 script {
-                    docker.build registry 
+                    docker.build rolling_update
                 }
                 //  + ':$BUILD_NUMBER'
                 sh 'docker image ls'
-                sh 'docker tag ' + registry + " " + ecr_repo
-                //sh 'docker run -it --rm -d -p 8080:80 --name web ' + registry
+                sh 'docker tag ' + rolling_update + " " + ecr_repo
+                //sh 'docker run -it --rm -d -p 8000:8000 --name web ' + registry
                 //sh 'docker container ls'
             }
         }
@@ -39,25 +39,19 @@ pipeline {
         }
         stage('Rolling update via AWS EKS') {
             steps {
-                withAWS(credentials: 'aws-cred-ecr', region: 'us-west-2') {
-                    sh '''
-                        kubectl apply -f strategy/rolling-update.yaml
-                        kubectl get all -n default
-                        #//sh 'kubectl rollout status deployment default'
-                    '''
-                }
+                //withAWS(region:'us-west-2', credentials:'aws-cred-ecr') {
+                    sh 'aws --version'
+                    //sh 'kubectl get svc'
+                    sh "aws eks --region us-west-2 update-kubeconfig --name p-cluster"
+                    sh "kubectl config use-context arn:aws:eks:us-west-2:998598315760:cluster/p-cluster"
+                //}
             }
         }
-    }
-    post {
-        success {
-            echo 'Webserver app pushed, and deployed to Amazon Web Service'
-        }
-        failure {
-            //sh 'docker container stop web'
-            sh 'docker container prune -f'
-            sh 'docker image prune -af'
-            echo 'BUILD FAILED'
+        stage('Clearning a docker container') {
+            steps {
+                sh 'docker container prune -f'
+                sh 'docker image prune -af'
+            }
         }
     }
 }
