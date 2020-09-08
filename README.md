@@ -146,7 +146,7 @@ Before perform rolling update via Jenkins pipeline, web app has to be implemente
 `kubectl apply -f strategy/deployment.yaml`  
 
 
-Web app is deployed on localhost:8080  
+Web app is deployed on http://af3fcdb39ab18458a87ea0bbd5d3e63f-1099063542.us-west-2.elb.amazonaws.com/git ad  
 
 
 To built pipeline successfully, use 'make tidy' to pass the Linting stage.  
