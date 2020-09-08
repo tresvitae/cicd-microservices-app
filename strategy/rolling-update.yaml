@@ -6,7 +6,7 @@ metadata:
     app: hello-app
   namespace: default
 spec:
-  replicas: 2
+  replicas: 3
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: hello-app
-        image: tresvitae/webserver-app:v1
+        image: tresvitae/webserver-app:v2
         imagePullPolicy: Always #IfNotPresent
         ports:
         - containerPort: 80
