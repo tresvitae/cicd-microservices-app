@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-app
+  name: web-app
   labels:
-    app: hello-app
+    app: web-app
   namespace: default
 spec:
   replicas: 3
@@ -14,14 +14,14 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: hello-app
+      app: web-app
   template:
     metadata:
       labels:
-        app: hello-app
+        app: web-app
     spec:
       containers:
-      - name: hello-app
+      - name: web-app
         image: tresvitae/webserver-app:v2
         imagePullPolicy: Always #IfNotPresent
         ports:
@@ -30,13 +30,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: hello-app
+  name: web-app
   labels:
-    app: hello-app
+    app: web-app
 spec:
   type: LoadBalancer
   selector:
-    app: hello-app
+    app: web-app
   ports:
     - port: 80
       targetPort: 80
