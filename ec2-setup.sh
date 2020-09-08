@@ -10,9 +10,6 @@ groupadd docker
 usermod -a -G docker $USER
 #   Install AWS CLI
 apt install -y unzip make
-apt-get install python3-pip3
-pip3 install awscli --upgrade
-export PATH=/usr/local/bin:$PATH
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 ./aws/install

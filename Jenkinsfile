@@ -37,15 +37,23 @@ pipeline {
                 }
             }
         }
+        stage('Creating config for Jenkins') {
+            steps {
+                withAWS(region:'us-west-2', credentials:'aws-cred-ecr') {
+                    sh 'aws eks --region us-west-2 update-kubeconfig --name main-cluster'
+                }
+            }
+        }
+
+
         stage('Rolling update via AWS EKS') {
             steps {
-                //withAWS(region:'us-west-2', credentials:'aws-cred-ecr') {
-                    //sh 'aws eks --region us-west-2 update-kubeconfig --name p-cluster'
+                withAWS(region:'us-west-2', credentials:'aws-cred-ecr') {
                     //sh 'kubectl config use-context arn:aws:eks:us-west-2:998598315760:cluster/p-cluster'
                     sh 'kubectl apply -f strategy/rolling-update.yaml'
                     sh 'kubectl get all -n default'
                     //sh 'kubectl rollout status deployment default'
-                //}
+                }
             }
         }
         stage('Clearning a docker container') {
